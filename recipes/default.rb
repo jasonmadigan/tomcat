@@ -20,7 +20,10 @@
 # required for the secure_password method from the openssl cookbook
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 
-include_recipe 'java'
+# [COOK-2695]
+if node[:java][:install_flavor] == 'openjdk'
+  include_recipe 'java'
+end
 
 tomcat_pkgs = value_for_platform(
   ['smartos'] => {
@@ -198,4 +201,9 @@ end
 execute 'wait for tomcat' do
   command 'sleep 5'
   action :nothing
+end
+
+# [COOK-2695]
+if node[:java][:install_flavor] == 'oracle'
+  include_recipe 'java'
 end
